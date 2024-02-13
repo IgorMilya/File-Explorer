@@ -1,51 +1,41 @@
-mod utils;
-
-use sysinfo::{System, Disks};
-use walkdir::WalkDir;
-use std::time::Instant;
+use std::io;
+use sysinfo::{Disks};
+use file_explorer::{check_all_disks, check_os, search};
 
 fn main() {
-    let start_time = Instant::now();
-    let mut system = System::new();
-    system.refresh_all();
-
-    println!("{:?}", System::distribution_id());
-    println!("{:?}", System::os_version().unwrap());
-
-
+    let mut all_disks = Vec::new();
     let disks = Disks::new_with_refreshed_list();
-    for disk in &disks {
-        println!("{:?}, {:?}, {:?}", disk.mount_point(), disk.available_space(), disk.kind());
-    }
 
+    loop {
+        println!("\nFile Explorer");
+        println!("1. Check your OS, version adn memory");
+        println!("2. Check all possible disks and their memory");
+        println!("3. Search files or directories in particular disk");
+        println!("4. Exit");
 
-    for entry in WalkDir::new("D://Test").contents_first(true) {
-        let entry = entry.unwrap();
-        println!("{}", entry.path().display());
-    }
+        let mut user_choice = String::new();
 
-    WalkDir::new("D://")
-        .into_iter()
-        .filter_map(Result::ok)
-        .for_each(|entry| {
-            let file_name = entry.file_name().to_string_lossy().to_string();
-            let file_path = entry.path().to_string_lossy().to_string();
+        io::stdin()
+            .read_line(&mut user_choice)
+            .expect("Error reading");
 
-
-            let walkdir_filetype = entry.file_type();
-            if file_name == "Test" {
-                println!("file_type: {:?}, file_name: {}, file_path: {}", walkdir_filetype, file_name, file_path);
+        let user_choice = match user_choice.trim().parse() {
+            Ok(s) => s,
+            Err(_) => {
+                println!("Wrong value, please tyr another");
+                continue;
             }
-            // let file_type = if walkdir_filetype.is_dir() {
-            //     "DIRECTORY"
-            // } else {
-            //     "FILE"
-            // }
-            //     .to_string();
-            //
-            // println!("file_type: {}, file_name: {}, file_path: {}", file_type, file_name, file_path);
-        });
+        };
 
-    let elapsed_time = start_time.elapsed();
-    println!("Time elapsed: {:?}", elapsed_time);
+        match user_choice {
+            1 => check_os(),
+            2 => check_all_disks(&disks, &mut all_disks),
+            3 => search(&disks, &all_disks),
+            4 => {
+                println!("Exiting...");
+                break;
+            }
+            _ => { break; }
+        }
+    }
 }
