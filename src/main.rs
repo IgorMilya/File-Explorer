@@ -30,7 +30,13 @@ fn main() {
         match user_choice {
             1 => check_os(),
             2 => check_all_disks(&disks, &mut all_disks),
-            3 => search(&disks, &all_disks),
+            3 => {
+                if all_disks.is_empty() {
+                  println!("Initially, you should check your possible disks for searching");
+                    continue;
+                }
+                search(&all_disks);
+            },
             4 => {
                 println!("Exiting...");
                 break;

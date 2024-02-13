@@ -1,20 +1,13 @@
 use std::io;
 use std::path::Path;
 use std::time::Instant;
-use sysinfo::{Disks};
 use walkdir::WalkDir;
 
-pub fn search(disks: &Disks, all_disks: &Vec<&Path>) {
-    if !all_disks.is_empty() {
-        all_disks.iter().for_each(|disk| {
-            println!("Disk {:?}", disk);
-        })
-    } else {
-        disks
-            .iter()
-            .for_each(|disk|
-                println!(" Disk {:?}", disk.mount_point()));
-    }
+pub fn search(all_disks: &Vec<&Path>) {
+    all_disks.iter().for_each(|disk| {
+        println!("Disk {:?}", disk);
+    });
+
 
     println!("Choose in what kind of disk you want to search your file. Type a letter");
     let mut user_choice = String::new();
