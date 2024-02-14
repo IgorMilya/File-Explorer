@@ -1,6 +1,7 @@
 use std::io;
 use sysinfo::{Disks};
-use file_explorer::{check_all_disks, check_os, search};
+use file_explorer::checking::{check_os, check_all_disks};
+use file_explorer::search::search;
 
 fn main() {
     let mut all_disks = Vec::new();
@@ -32,11 +33,30 @@ fn main() {
             2 => check_all_disks(&disks, &mut all_disks),
             3 => {
                 if all_disks.is_empty() {
-                  println!("Initially, you should check your possible disks for searching");
+                    println!("Initially, you should check your possible disks for searching");
                     continue;
                 }
-                search(&all_disks);
-            },
+                all_disks.iter().for_each(|disk| {
+                    println!("Disk {:?}", disk);
+                });
+
+
+                println!("Choose in what kind of disk you want to search your file. Type a letter");
+                let mut user_choice = String::new();
+
+                io::stdin()
+                    .read_line(&mut user_choice)
+                    .expect("Failed to read");
+
+                let root = format!("{}:\\", user_choice.trim().to_uppercase());
+
+                if !all_disks.iter().any(|disk| disk.to_string_lossy().to_string() == root) {
+                    println!("Wrong disk");
+                    continue;
+                }
+
+                search(root);
+            }
             4 => {
                 println!("Exiting...");
                 break;
