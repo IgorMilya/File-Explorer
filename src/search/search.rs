@@ -1,6 +1,6 @@
 use std::io;
 use std::time::Instant;
-use walkdir::{DirEntry, WalkDir};
+use walkdir::{WalkDir};
 use crate::utils::{DIRECTORY, FILE};
 
 pub fn search(root: String) {
